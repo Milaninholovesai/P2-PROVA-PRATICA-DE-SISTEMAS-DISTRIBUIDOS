@@ -1,7 +1,15 @@
 Mayran Juvenal Milani
+Simone Tatiane do Canto
+18/11/2026
 
 
 # P2-PROVA-PRATICA-DE-SISTEMAS-DISTRIBUIDOS
+
+1. situação problema
+R: O sistema não respeitava o limite de pedidos simultâneos, não mantinha os servidores consistentes e não aproveitava a réplica na falha do principal. As correções aplicadas resolveram os três pontos: limite em 2, sincronização copiando do principal e consulta usando a réplica quando o principal está offline.
+
+2. Primeira execução
+R: O programa executou sem erros e sem travar, mas o resultado estava incorreto em três pontos: o limite de pedidos simultâneos, a atualização da réplica e a consulta após a falha. Esses problemas não geram mensagem de erro, por isso só aparecem quando se compara a saída com o que era esperado.
 
 Evidência 1 = 
 PS C:\Users\aluno\Documents\simulado_distribuidos> python --version
