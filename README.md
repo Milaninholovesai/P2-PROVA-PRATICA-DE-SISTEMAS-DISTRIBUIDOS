@@ -1,3 +1,6 @@
+Mayran Juvenal Milani
+
+
 # P2-PROVA-PRATICA-DE-SISTEMAS-DISTRIBUIDOS
 
 Evidência 1 = 
@@ -76,8 +79,6 @@ Observe se:
 3. i estoque principal foi atualziado.
 4. a replica recebeu a atualização;
 5. a consulta continua funcionando após a falha simulada do servidor princiapl.
-
-Etapa 5 análise técnica
 
 Etapa 5 - Análise técnica
 
