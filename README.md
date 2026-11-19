@@ -6,90 +6,72 @@ Simone Tatiane do Canto
 # P2-PROVA-PRATICA-DE-SISTEMAS-DISTRIBUIDOS
 
 1. situação problema
+   Descreva brevemente os problemas apresentados na central de pedidos distribuida.
+
 R: O sistema não respeitava o limite de pedidos simultâneos, não mantinha os servidores consistentes e não aproveitava a réplica na falha do principal. As correções aplicadas resolveram os três pontos: limite em 2, sincronização copiando do principal e consulta usando a réplica quando o principal está offline.
 
 2. Primeira execução
+   Explique o que foi observado ao executar o programa pela priemira vez.
 R: O programa executou sem erros e sem travar, mas o resultado estava incorreto em três pontos: o limite de pedidos simultâneos, a atualização da réplica e a consulta após a falha. Esses problemas não geram mensagem de erro, por isso só aparecem quando se compara a saída com o que era esperado.
 
-Evidência 1 = 
-PS C:\Users\aluno\Documents\simulado_distribuidos> python --version
-Python 3.13.7
-PS C:\Users\aluno\Documents\simulado_distribuidos> python central_pedidos.py
-=== CENTRAL DE PEDIDOS ===
-limite simultaneo: 3
-Estoque inicial: 10
-Pedidos confirmados: [101, 102, 103]
-Estoque principal: 7
-Replica antes 10
-Replica depois 10
-Consulta apos falha: INDISPONIVEL None
-PS C:\Users\aluno\Documents\simulado_distribuidos> 
+Evidência 1 = (evidencia1.png)
 
 
-Problema A - Concorrência
-Evidencia 2:
+3. Problema A - Concorrência
+   Qual problema foi identificado?
+   
+   R: A empresa necessitava que o limite de processamento simultaneo fosse 2, porém inicialmente eram 3 processamentos.
 
-PS C:\Users\aluno\Documents\simulado_distribuidos> python central_pedidos.py
-=== CENTRAL DE PEDIDOS ===
-limite simultaneo: 2
-Estoque inicial: 10
-Pedidos confirmados: [101, 102, 103]
-Estoque principal: 7
-Replica antes 10
-Replica depois 10
-Consulta apos falha: INDISPONIVEL None
-PS C:\Users\aluno\Documents\simulado_distribuidos> 
+   Qual alteração foi realizada?
+   
+R: Precisei apenas alterar a linha "MAXIMO_SIMULTANEO" de 3 para 2. Ela foi modificada pois definia o limite de processamento simultânio e conforme pedido pela empresa precisavamos alterar para apenas dois pedidos em processamento.
 
-Explicação = Precisei apenas alterar a linha "MAXIMO_SIMULTANEO" de 3 para 2. Ela foi modificada pois definia o limite de processamento simultânio e conforme pedido pela empresa precisavamos alterar para apenas dois pedidos em processamento.
+Evidencia 2: Concorrência
 
+(evidencia2.png)
 
-Problema B - Replicação e consistência
-Evidência 3:
+4. Problema B - Problema B - Replicação e consistência
 
-Após a sincronização, os dois servidores mostram o mesmo valor:
+Qual problema foi identificado?
+A réplica não recebia o estoque atualizado do servidor principal. Depois do processamento dos pedidos, o principal ficava com 7 unidades e a réplica continuava com 10. A função de sincronização copiava o valor da réplica para ela mesma, então nada era atualizado e os dois servidores ficavam inconsistentes.
 
-Estoque principal: 7
-Replica depois 7
+Qual alteração foi realizada?
+Na função de sincronização, a origem do valor passou a ser o estoque do servidor principal, e a cópia foi protegida pela trava para não ocorrer no meio de uma atualização. Com isso, a réplica passou a receber o valor atualizado (7), e os dois servidores ficaram consistentes.
 
-Em código, para exibir os dois lado a lado logo depois de sincronizar():
+Evidencia 3 - sincronização
 
-sincronizar()
+(evidencia3.png)
 
-print("Estoque principal após sincronização:", principal["estoque"])
-print("Estoque réplica após sincronização:", replica["estoque"])
+5 PROBLEMA C - TOLERÂNCIA A FALHAS
 
-Saída:
+Qual problema foi identificado?
+A função de consulta não utilizava a réplica quando o servidor principal ficava indisponível. O segundo teste de disponibilidade verificava o servidor principal novamente, em vez de verificar a réplica. Por isso, quando o principal caía, as duas condições falhavam e o sistema respondia “indisponível”, mesmo com a réplica funcionando.
 
-Estoque principal após sincronização: 7
-Estoque réplica após sincronização: 7
-
-Os 3 pedidos (101, 102 e 103) foram confirmados, então o estoque do principal caiu de 10 para 7, e a sincronização copiou esse valor para a réplica. Isso vale com o limite simultâneo em 2, pois ele só afeta o tempo de execução, não o resultado final.
-
-PROBLEMA C - TOLERÂNCIA A FALHAS
-Evidência 4:
-
-=== CENTRAL DE PEDIDOS ===
-limite simultaneo: 2
-Estoque inicial: 10
-Pedidos confirmados: [101, 102, 103]
-Estoque principal: 7
-Replica antes 10
-Replica depois 7
-Consulta apos falha: REPLICA 7
-
-Conclusão: mesmo com o principal fora do ar, o sistema continuou respondendo consultas por meio da réplica, com o valor correto de 7 unidades. Isso comprova a tolerância a falhas exigida no Problema C.
-
+Qual alteração foi realizada?
+No segundo teste da função de consulta, a condição foi trocada para verificar se a réplica está online. Com isso, quando o principal fica offline, a consulta passa a ser respondida pela réplica, que retorna o estoque de 7 unidades. O sistema só informa “indisponível” se os dois servidores estiverem fora do ar.
 Passo 3 - verificar
 
-Observe se:
-1. O limite de processamento simultaneo está de acordo com a regra da empresa
-2.os três pedidos foram processados.
-3. i estoque principal foi atualziado.
-4. a replica recebeu a atualização;
-5. a consulta continua funcionando após a falha simulada do servidor princiapl.
+Evidencia 4 - tolerancia a falhas
 
-Etapa 5 - Análise técnica
+(evidencia4.pnh)
 
+6. validação do programa
+descreva os resultados observados após as três correções. 
+
+R:Após aplicar as três correções, o programa foi executado novamente e os resultados foram:
+
+Limite de concorrência: o sistema exibiu limite simultâneo igual a 2, de acordo com a regra da empresa. O pico medido de pedidos em processamento ao mesmo tempo foi 2, e o terceiro pedido aguardou uma vaga.
+Processamento dos pedidos: os três pedidos (101, 102 e 103) foram confirmados.
+Servidor principal: o estoque foi atualizado de 10 para 7 unidades.
+Réplica: antes da sincronização estava com 10 unidades e, depois, passou a ter 7, igual ao principal.
+Falha simulada: com o principal offline, a consulta continuou funcionando e retornou a réplica com 7 unidades.
+
+Evidencia 5 - execução completa
+
+(evidencia5.png)
+
+7. Analise técnica
+  
 1. Qual é a função do semáforo no processamento dos pedidos?
 
 Ele limita quantos pedidos são processados ao mesmo tempo. Aqui, no máximo 2. O terceiro pedido espera um dos outros terminar, como numa loja com dois caixas.
@@ -109,4 +91,12 @@ O lock deixa só uma thread por vez alterar o estoque. Sem ele, dois pedidos pod
 5. A sincronização deve acontecer antes ou depois do processamento dos pedidos? Qual é a relação de causalidade?
 
 Depois. Os pedidos mudam o estoque (10 → 7), e a sincronização leva essa mudança para a réplica. Se viesse antes, copiaria o valor antigo. E precisa acontecer antes da falha, porque com o principal fora do ar não há de onde copiar.
+
+
+8. Conclusão
+R: Com essa atividade, aprendi que um sistema distribuído pode executar sem nenhuma mensagem de erro e, mesmo assim, estar incorreto. Os três problemas do código original (limite acima da regra, réplica desatualizada e consulta que ignorava a réplica) não travaram o programa, e só foram percebidos ao comparar a saída com o resultado esperado. Isso mostra a importância de testar e validar o comportamento do sistema, e não apenas verificar se ele roda.
+
+9. entrega
+
+Mayran Juvenal Milani
 
