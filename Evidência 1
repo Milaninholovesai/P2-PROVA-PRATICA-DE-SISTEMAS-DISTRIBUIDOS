@@ -1,0 +1,12 @@
+PS C:\Users\aluno\Documents\simulado_distribuidos> python --version
+Python 3.13.7
+PS C:\Users\aluno\Documents\simulado_distribuidos> python central_pedidos.py
+=== CENTRAL DE PEDIDOS ===
+limite simultaneo: 3
+Estoque inicial: 10
+Pedidos confirmados: [101, 102, 103]
+Estoque principal: 7
+Replica antes 10
+Replica depois 10
+Consulta apos falha: INDISPONIVEL None
+PS C:\Users\aluno\Documents\simulado_distribuidos> 
