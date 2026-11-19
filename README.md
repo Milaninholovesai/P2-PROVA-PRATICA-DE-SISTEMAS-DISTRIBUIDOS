@@ -100,3 +100,7 @@ R: Com essa atividade, aprendi que um sistema distribuído pode executar sem nen
 
 Mayran Juvenal Milani
 
+Repositório : https://github.com/Milaninholovesai/P2-PROVA-PRATICA-DE-SISTEMAS-DISTRIBUIDOS
+
+data: 18/11/2026
+
